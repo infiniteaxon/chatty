@@ -40,7 +40,7 @@ while True:
     if sending.lower() == 'q':  # Exit the program
         break
     date_now = datetime.now().strftime('%m-%d-%Y %H:%M:%S')  # Find current date/time
-    to_send = f"{uCOLOR}[{date_now}] {name}{sep}{sending}{Fore.RESET}"  # Structure message
+    to_send = f"{uCOLOR}[{date_now}] {name}: {sending}{Fore.RESET}"  # Structure message
     tcp.send(to_send.encode())  # Send Message
 
 tcp.close()  # Close socket
