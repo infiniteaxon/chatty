@@ -1,5 +1,5 @@
 import socket
-from threading import Thread
+import Thread
 
 # Server Connection Info
 sHOST = socket.gethostbyname(socket.gethostname())
@@ -30,9 +30,12 @@ while True:
     cSOCKET, uADDRESS = tcp.accept()  # Connects client to TCP Socket
     print(f"[+] {uADDRESS} connected.")  # Returns connection status if successful
     cSOCKETS.add(cSOCKET)  # Adds new Client to Socket list
-    t = Thread(target=client_connect, args=(cSOCKET,))  # Sets up thread for each client
-    t.daemon = True  # Daemon makes each socket close when server socket closes
-    t.start()  # Initialize the thread
+    threading.Thread(target=client_connect, args=(cSOCKET,), daemon=True,).start()  # Sets up thread for each client, daemon ends threads when main ends
+
+
+for clients in cSOCKETs:
+    clients.close()
+tcp.close()
 
 
 for clients in cSOCKETs:
