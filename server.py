@@ -1,5 +1,5 @@
 import socket
-import Thread
+import threading
 
 # Server Connection Info
 sHOST = socket.gethostbyname(socket.gethostname())
