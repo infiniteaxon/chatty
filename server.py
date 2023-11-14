@@ -4,7 +4,6 @@ from threading import Thread
 # Server Connection Info
 sHOST = socket.gethostbyname(socket.gethostname())
 sPORT = 2003
-chat_token = "<SEP>"
 
 # Initiate Client Sockets
 cSOCKETS = set()
@@ -23,8 +22,6 @@ def client_connect(cSOCKET):
         except Exception as e:  # If there's an error:
             print(f"[!] Error: {e}")  # Error handling
             cSOCKETS.remove(cSOCKET)  # Removes user from socket
-        else:
-            message = message.replace(chat_token, ": ")  # Formats chat token for visual clarity
         for clientSOCKET in cSOCKETS:  # For loop to send message to all connected users
             clientSOCKET.send(message.encode())  # Encode message for transit
 
