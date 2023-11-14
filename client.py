@@ -1,7 +1,7 @@
 import socket
 import random
+import threading
 from datetime import datetime
-from threading import Thread
 from colorama import Fore, init
 
 init()  # Colorama
@@ -31,9 +31,8 @@ def listen():  # Function to listen for messages
         print("\n" + message)  # Print message
 
 
-t = Thread(target=listen)  # Listen for messages always
-t.daemon = True  # Daemon wil end threads when main ends
-t.start()  # Start thread
+threading.Thread(target=listen, daemon=True).start()  # Listen for messages always, Daemon ends thread when main ends, starts
+
 
 while True:
     sending = input()  # Message being sent
