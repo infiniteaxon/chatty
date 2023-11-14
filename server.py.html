@@ -1,0 +1,64 @@
+<html>
+<head>
+<title>server.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+.s3 { color: #6897bb;}
+.s4 { color: #6a8759;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+server.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">socket</span>
+<span class="s0">from </span><span class="s1">threading </span><span class="s0">import </span><span class="s1">Thread</span>
+
+<span class="s2"># Server Connection Info</span>
+<span class="s1">sHOST = socket.gethostbyname(socket.gethostname())</span>
+<span class="s1">sPORT = </span><span class="s3">2003</span>
+<span class="s1">chat_token = </span><span class="s4">&quot;&lt;SEP&gt;&quot;</span>
+
+<span class="s2"># Initiate Client Sockets</span>
+<span class="s1">cSOCKETS = set()</span>
+<span class="s1">tcp = socket.socket(socket.AF_INET</span><span class="s0">, </span><span class="s1">socket.SOCK_STREAM)  </span><span class="s2"># Create TCP Socket</span>
+<span class="s1">tcp.setsockopt(socket.SOL_SOCKET</span><span class="s0">, </span><span class="s1">socket.SO_REUSEADDR</span><span class="s0">, </span><span class="s3">1</span><span class="s1">)  </span><span class="s2"># Set Socket to be Reusable</span>
+<span class="s1">tcp.bind((sHOST</span><span class="s0">, </span><span class="s1">sPORT))  </span><span class="s2"># Bind Socket to Server</span>
+<span class="s1">tcp.listen(</span><span class="s3">5</span><span class="s1">)  </span><span class="s2"># Only 5 Connection can queue at once</span>
+<span class="s1">print(</span><span class="s4">f&quot;[*] Live on </span><span class="s0">{</span><span class="s1">sHOST</span><span class="s0">}</span><span class="s4">:</span><span class="s0">{</span><span class="s1">sPORT</span><span class="s0">}</span><span class="s4">&quot;</span><span class="s1">)  </span><span class="s2"># Print Socket Connection Info</span>
+
+
+<span class="s2"># Function to Listen for Client Connections</span>
+<span class="s0">def </span><span class="s1">client_connect(cSOCKET):</span>
+    <span class="s0">while True</span><span class="s1">:</span>
+        <span class="s0">try</span><span class="s1">:</span>
+            <span class="s1">message = cSOCKET.recv(</span><span class="s3">1024</span><span class="s1">).decode()  </span><span class="s2"># Receive and decode message</span>
+        <span class="s0">except </span><span class="s1">Exception </span><span class="s0">as </span><span class="s1">e:  </span><span class="s2"># If there's an error:</span>
+            <span class="s1">print(</span><span class="s4">f&quot;[!] Error: </span><span class="s0">{</span><span class="s1">e</span><span class="s0">}</span><span class="s4">&quot;</span><span class="s1">)  </span><span class="s2"># Error handling</span>
+            <span class="s1">cSOCKETS.remove(cSOCKET)  </span><span class="s2"># Removes user from socket</span>
+        <span class="s0">else</span><span class="s1">:</span>
+            <span class="s1">message = message.replace(chat_token</span><span class="s0">, </span><span class="s4">&quot;: &quot;</span><span class="s1">)  </span><span class="s2"># Formats chat token for visual clarity</span>
+        <span class="s0">for </span><span class="s1">clientSOCKET </span><span class="s0">in </span><span class="s1">cSOCKETS:  </span><span class="s2"># For loop to send message to all connected users</span>
+            <span class="s1">clientSOCKET.send(message.encode())  </span><span class="s2"># Encode message for transit</span>
+
+
+<span class="s0">while True</span><span class="s1">:</span>
+    <span class="s1">cSOCKET</span><span class="s0">, </span><span class="s1">uADDRESS = tcp.accept()  </span><span class="s2"># Connects client to TCP Socket</span>
+    <span class="s1">print(</span><span class="s4">f&quot;[+] </span><span class="s0">{</span><span class="s1">uADDRESS</span><span class="s0">} </span><span class="s4">connected.&quot;</span><span class="s1">)  </span><span class="s2"># Returns connection status if successful</span>
+    <span class="s1">cSOCKETS.add(cSOCKET)  </span><span class="s2"># Adds new Client to Socket list</span>
+    <span class="s1">t = Thread(target=client_connect</span><span class="s0">, </span><span class="s1">args=(cSOCKET</span><span class="s0">,</span><span class="s1">))  </span><span class="s2"># Sets up thread for each client</span>
+    <span class="s1">t.daemon = </span><span class="s0">True  </span><span class="s2"># Daemon makes each socket close when server socket closes</span>
+    <span class="s1">t.start()  </span><span class="s2"># Initialize the thread</span>
+
+
+<span class="s0">for </span><span class="s1">clients </span><span class="s0">in </span><span class="s1">cSOCKETs:</span>
+    <span class="s1">clients.close()</span>
+<span class="s1">tcp.close()</span>
+</pre>
+</body>
+</html>
